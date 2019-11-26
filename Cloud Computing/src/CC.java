@@ -9,6 +9,8 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 
+import com.amazonaws.services.ec2.model.StartInstancesRequest;	// start instance에 필요한 라이브러리
+
 public class CC {
 	
 		static AmazonEC2 ec2;
@@ -36,9 +38,10 @@ public class CC {
 		
 		Scanner menu = new Scanner(System.in);
 		Scanner id_string = new Scanner(System.in);
-		int number = 1;
+		boolean  loop_tag = true;
+		int MenuNumber = 0;
 		
-		
+		while(loop_tag)
 		{
 			System.out.println(" ");
 			System.out.println(" ");
@@ -46,49 +49,86 @@ public class CC {
 			System.out.println(" Amazon AWS Control Panel using SDK ");
 			System.out.println(" ");
 			System.out.println(" Cloud Computing, Computer Science Department ");
-			System.out.println(" at Chungbuk National University ");
+			System.out.println(" at Chungbuk National University Made By Jin Jun-ho");
 			System.out.println("------------------------------------------------------------");
-			System.out.println(" 1. list instance 2. available zones ");
-			System.out.println(" 3. start instance 4. available regions ");
-			System.out.println(" 5. stop instance 6. create instance ");
-			System.out.println(" 7. reboot instance 8. list images ");
-			System.out.println(" 99. quit ");
+			System.out.println(" 1. list instance	2. available zones ");
+			System.out.println(" 3. start instance	4. available regions ");
+			System.out.println(" 5. stop instance	6. create instance ");
+			System.out.println(" 7. reboot instance	8. list images ");
+			System.out.println(" 99. quit");
 			System.out.println("------------------------------------------------------------");
 			System.out.print("Enter an integer: ");
-			switch(number)
+			
+			MenuNumber = menu.nextInt();
+			
+			switch(MenuNumber)
 			{
 			case 1:
 				listInstances();
 				break;
+			case 2:
+				StartInstance();
+				break;
+				
+			case 99:
+				System.out.print("Bye~.");
+				loop_tag = false;
+				break;
 			}
 		}
-	}
-	
-	public static void listInstances() throws Exception
-	{
-		System.out.println("Listing instances....");
-		boolean done = false;
-		DescribeInstancesRequest request = new DescribeInstancesRequest();
-		while(!done) {
-		DescribeInstancesResult response = ec2.describeInstances(request);
-		for(Reservation reservation : response.getReservations()) {
-			for(Instance instance : reservation.getInstances()) {
-				System.out.printf(
-						"[id] %s, " + "[AMI] %s, " + "[type] %s, " + "[state] %10s, " + "[monitoring state] %s", 
-						instance.getInstanceId(), 
-						instance.getImageId(), 
-						instance.getInstanceType(), 
-						instance.getState().getName(), 
-						instance.getMonitoring().getState());
+			menu.close();
 		}
-		System.out.println();
+		
+		public static void listInstances() {
+		
+			System.out.println("Listing instances....");
+		
+			boolean done = false;
+		
+			DescribeInstancesRequest request = new DescribeInstancesRequest();
+		
+			
+			while(!done)
+			{	
+				DescribeInstancesResult response = ec2.describeInstances(request);
+				
+				for(Reservation reservation : response.getReservations())
+				{
+					for(Instance instance : reservation.getInstances()) {
+						System.out.printf(
+								"[id] %s, " + "[AMI] %s, " + "[type] %s, " + "[state] %10s, " + "[monitoring state] %s", 
+								instance.getInstanceId(), 
+								instance.getImageId(), 
+								instance.getInstanceType(), 
+								instance.getState().getName(), 
+								instance.getMonitoring().getState());
+						}
+					System.out.println();
+				}
+				request.setNextToken(response.getNextToken());
+				
+				if(response.getNextToken() == null)
+				{
+					done = true;
+				}
+			}
 		}
-		request.setNextToken(response.getNextToken());
-		if(response.getNextToken() == null) {
-		done = true;
+		
+		public static void StartInstance() {
+			
+			System.out.println("Starting instance....");
+			
+			System.out.print("Enter an instance ID: ");
+			
+			Scanner input = new Scanner(System.in);
+			
+			String instance_id = input.next();
+			
+			StartInstancesRequest startInstancesRequest = new StartInstancesRequest().withInstanceIds(instance_id);
+			 
+	        ec2.startInstances(startInstancesRequest);
+	        
+	        input.close();
 		}
-		}
-		}
-
 }
 
