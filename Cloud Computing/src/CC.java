@@ -15,11 +15,14 @@ import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 
 import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
+import com.amazonaws.services.ec2.model.DescribeImagesRequest;
+import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.AvailabilityZone;
 
 import com.amazonaws.services.ec2.model.StartInstancesRequest;	// start instance에 필요한 라이브러리
 
 import com.amazonaws.services.ec2.model.DescribeRegionsResult;
+import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Region;
 
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
@@ -67,10 +70,10 @@ public class CC {
 			System.out.println(" Cloud Computing, Computer Science Department ");
 			System.out.println(" at Chungbuk National University Made By Jin Jun-ho");
 			System.out.println("------------------------------------------------------------");
-			System.out.println(" 1. list instance	2. available zones ");
-			System.out.println(" 3. start instance	4. available regions ");
-			System.out.println(" 5. stop instance	6. create instance ");
-			System.out.println(" 7. reboot instance	8. list images ");
+			System.out.println(" 1. list instance		2. available zones ");
+			System.out.println(" 3. start instance		4. available regions ");
+			System.out.println(" 5. stop instance		6. create instance ");
+			System.out.println(" 7. reboot instance		8. list images ");
 			System.out.println(" 99. quit");
 			System.out.println("------------------------------------------------------------");
 			System.out.print("Enter an integer: ");
@@ -99,6 +102,9 @@ public class CC {
 				break;
 			case 7:
 				RebootInstance();
+				break;
+			case 8:
+				listImages();
 				break;
 			case 99:
 				System.out.print("Bye~.");
@@ -231,6 +237,21 @@ public class CC {
 			
 			RebootInstancesRequest rebootInstancesRequest = new RebootInstancesRequest().withInstanceIds(instance_id);
 			ec2.rebootInstances(rebootInstancesRequest);
+		}
+		
+		public static void listImages() {
+			
+			System.out.println("Listing images....");
+			
+			DescribeImagesRequest img_req = new DescribeImagesRequest();
+			
+			DescribeImagesResult img_result = ec2.describeImages(img_req);
+			
+			List<Image> images = img_result.getImages();
+			
+			for (Image image : images) {
+				System.out.printf("[id]%s [name]%s \n",image.getImageId(), image.getName());
+			}
 		}
 }
 
