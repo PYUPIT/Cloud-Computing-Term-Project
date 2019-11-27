@@ -245,6 +245,8 @@ public class CC {
 			
 			DescribeImagesRequest img_req = new DescribeImagesRequest();
 			
+			img_req.withOwners("self");
+			
 			DescribeImagesResult img_result = ec2.describeImages(img_req);
 			
 			List<Image> images = img_result.getImages();
