@@ -2,31 +2,33 @@ import java.util.*;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+/* credential 설정 확인에 필요한 클래스들 호출*/
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
-
+/* ListInstance() 메소드에 필요한 클래스들 호출 */
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
-
-import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.Reservation;
-
+import com.amazonaws.services.ec2.model.Instance;
+/* AvailabilityZones() 메소드에 필요한 클래스들 호출 */
 import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
-import com.amazonaws.services.ec2.model.DescribeImagesRequest;
-import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.AvailabilityZone;
-
-import com.amazonaws.services.ec2.model.StartInstancesRequest;	// start instance에 필요한 라이브러리
-
+/* StartInstance() 메소드에 필요한 클래스들 호출 */
+import com.amazonaws.services.ec2.model.StartInstancesRequest;
+/* AvailabilityRegions() 메소드에 필요한 클래스들 호출 */
 import com.amazonaws.services.ec2.model.DescribeRegionsResult;
-import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Region;
-
+/* StopInstance() 메소드에 필요한 클래스들 호출 */
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
-
+/* CreateInstance() 메소드에 필요한 클래스들 호출 */
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
+/* RebootInstance() 메소드에 필요한 클래스들 호출 */
+import com.amazonaws.services.ec2.model.RebootInstancesRequest;
+/* ListImages() 메소드에 필요한 클래스들 호출 */
+import com.amazonaws.services.ec2.model.DescribeImagesRequest;
+import com.amazonaws.services.ec2.model.DescribeImagesResult;
+import com.amazonaws.services.ec2.model.Image;
 
 public class cloud_project {
 	
@@ -67,7 +69,7 @@ public class cloud_project {
 				System.out.println(" ");
 				System.out.println(" Lecture : Cloud Computing | Department : Software");
 				System.out.println(" ");
-				System.out.println(" 								  Made By Junho Jin At CBNU ");
+				System.out.println(" Made By Junho Jin At CBNU ");
 				System.out.println("------------------------------------------------------------");
 				System.out.println("  1. List instance			2. Available zones ");
 				System.out.println("  3. Start instance			4. Available regions ");
@@ -135,9 +137,9 @@ public class cloud_project {
 			{	
 				DescribeInstancesResult response = ec2.describeInstances(request);
 				
-				for(Reservation reservation : response.getReservations())
+				for(Reservation res : response.getReservations())
 				{
-					for(Instance instance : reservation.getInstances()) {
+					for(Instance instance : res.getInstances()) {
 						
 						System.out.printf(
 								"[ID] %s \t | " + "[AMI] %s \t | " + "[TYPE] %s \t | " + "[STATE] %s \t | " + "[MONITORING STATE] %s \t | \n", 
@@ -178,13 +180,13 @@ public class cloud_project {
 			
 			System.out.println("\n 인스턴트를 실행하는 중입니다 .... \n");
 			
-			System.out.print("Enter an instance ID: ");
+			System.out.print(" 실행할 인스턴스 ID를 입력해주세요  >> ");
 			
 			String instance_id = input.next();
 			
-			StartInstancesRequest startInstancesRequest = new StartInstancesRequest().withInstanceIds(instance_id);
+			StartInstancesRequest start_Instances_Request = new StartInstancesRequest().withInstanceIds(instance_id);
 			 
-	        ec2.startInstances(startInstancesRequest);
+	        ec2.startInstances(start_Instances_Request);
 		}
 		
 		public static void AvailableRegions() {
@@ -216,20 +218,20 @@ public class cloud_project {
 			
 			System.out.println(" 인스턴스를 생성하는 중입니다 ....");
 			
-			System.out.print("AMI ID를 입력해주세요 >> ");
+			System.out.print(" AMI ID를 입력해주세요 >> ");
 			
-			String ami_id = input.next();
+			String ami_id = input.next();	// 인스턴트 생성에 필요한 AMI ID를 입력
 			
-			RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
+			RunInstancesRequest run_Instances_Request = new RunInstancesRequest();
 			
-			runInstancesRequest.withImageId(ami_id)
-							   .withInstanceType("t2.micro")
+			run_Instances_Request.withImageId(ami_id)				// 인스턴트 생성에 필요한 AMI ID를 입력
+							   .withInstanceType("t2.micro")	// 인스턴트 생성에 필요한 인스턴트 유형을 입력
 			                   .withMinCount(1)
 			                   .withMaxCount(1)
-			                   .withKeyName("awskey01")
-			                   .withSecurityGroups("rules_01");
+			                   .withKeyName("awskey01")			// 인스턴트 생성에 필요한 키페어를 입력
+			                   .withSecurityGroups("rules_01");	// 인스턴트 생성에 필요한 보안그룹을 입력
 
-			RunInstancesResult result = ec2.runInstances(runInstancesRequest);
+			RunInstancesResult result = ec2.runInstances(run_Instances_Request);
 			
 			Instance instance = result.getReservation().getInstances().get(0);
 			
@@ -242,12 +244,13 @@ public class cloud_project {
 			
 			System.out.println(" 인스턴스를 재부팅하는 중입니다 ....");
 			
-			System.out.print("Enter an instance ID: ");
+			System.out.print(" 재부팅할 인스턴스 ID를 입력해주세요 >> ");
 			
 			String instance_id = input.next();
 			
-			RebootInstancesRequest rebootInstancesRequest = new RebootInstancesRequest().withInstanceIds(instance_id);
-			ec2.rebootInstances(rebootInstancesRequest);
+			RebootInstancesRequest reboot_Instances_Request = new RebootInstancesRequest().withInstanceIds(instance_id);
+			
+			ec2.rebootInstances(reboot_Instances_Request);
 		}
 		
 		public static void listImages() {
@@ -264,7 +267,10 @@ public class cloud_project {
 			
 			for (Image image : images)
 			{
-				System.out.printf("[ID] %s \t | [NAME] %s \t | [OWNER] %s \t | \n",image.getImageId(), image.getName(), image.getOwnerId());
+				System.out.printf("[ID] %s \t | [NAME] %s \t | [OWNER] %s \t | \n",
+						image.getImageId(), 
+						image.getName(), 
+						image.getOwnerId());
 			}
 		}
 }
