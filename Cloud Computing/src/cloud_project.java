@@ -9,8 +9,6 @@ import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 
-import com.amazonaws.services.ec2.model.InstanceNetworkInterfaceSpecification;
-
 import com.amazonaws.services.ec2.model.RebootInstancesRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 
@@ -30,9 +28,11 @@ import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 
-public class CC {
+public class cloud_project {
 	
 		static AmazonEC2 ec2;
+		
+		static Scanner input = new Scanner(System.in);
 		
 		private static void init() throws Exception {
 			
@@ -51,124 +51,134 @@ public class CC {
 					.withRegion("us-east-1")
 					.build();
 		}
+		
 		public static void main(String[] args) throws Exception {
-		
+			
 			init();
-		
-		Scanner menu = new Scanner(System.in);
-		Scanner id_string = new Scanner(System.in);
-		boolean  loop_tag = true;
-		int MenuNumber = 0;
-		
-		while(loop_tag)
-		{
-			System.out.println(" ");
-			System.out.println(" ");
-			System.out.println("------------------------------------------------------------");
-			System.out.println(" Amazon AWS Control Panel using SDK ");
-			System.out.println(" ");
-			System.out.println(" Cloud Computing, Computer Science Department ");
-			System.out.println(" at Chungbuk National University Made By Jin Jun-ho");
-			System.out.println("------------------------------------------------------------");
-			System.out.println(" 1. list instance		2. available zones ");
-			System.out.println(" 3. start instance		4. available regions ");
-			System.out.println(" 5. stop instance		6. create instance ");
-			System.out.println(" 7. reboot instance		8. list images ");
-			System.out.println(" 99. quit");
-			System.out.println("------------------------------------------------------------");
-			System.out.print("Enter an integer: ");
 			
-			MenuNumber = menu.nextInt();
+			boolean  loop_sign = true;
 			
-			switch(MenuNumber)
+			while(loop_sign)
 			{
-			case 1:
-				listInstances();
-				break;
-			case 2:
-				AvailableZones();
-				break;
-			case 3:
-				StartInstance();
-				break;
-			case 4:
-				AvailableRegions();
-				break;
-			case 5:
-				StopInstance();
-				break;
-			case 6:
-				CreateInstance();
-				break;
-			case 7:
-				RebootInstance();
-				break;
-			case 8:
-				listImages();
-				break;
-			case 99:
-				System.out.print("Bye~.");
-				loop_tag = false;
-				break;
-			}
-		}
-		}
+				System.out.println(" ");
+				System.out.println(" ");
+				System.out.println("------------------------------------------------------------");
+				System.out.println(" Cloud Computing Term Project : AWS CONTROL PANEL USING SDK ");
+				System.out.println(" ");
+				System.out.println(" Lecture : Cloud Computing | Department : Software");
+				System.out.println(" ");
+				System.out.println(" 								  Made By Junho Jin At CBNU ");
+				System.out.println("------------------------------------------------------------");
+				System.out.println("  1. List instance			2. Available zones ");
+				System.out.println("  3. Start instance			4. Available regions ");
+				System.out.println("  5. Stop instance			6. Create instance ");
+				System.out.println("  7. Reboot instance			8. List images ");
+				System.out.println(" 99. Quit");
+				System.out.println("------------------------------------------------------------");
+				
+				System.out.print("\n Please enter a number: ");
+			
+				int menu_num = input.nextInt();
+				
+				switch(menu_num)
+				{
+				case 1:
+					ListInstances();
+					break;
+					
+				case 2:
+					AvailableZones();
+					break;
+					
+				case 3:
+					StartInstance();
+					break;
+					
+				case 4:
+					AvailableRegions();
+					break;
+					
+				case 5:
+					StopInstance();
+					break;
+					
+				case 6:
+					CreateInstance();
+					break;
+					
+				case 7:
+					RebootInstance();
+					break;
+					
+				case 8:
+					listImages();
+					break;
+					
+				case 99:	// while문을 탈출한다.
+					System.out.print("\n 프로그램을 종료합니다. \n");
+					loop_sign = false;
+					break;
+					
+				}	/* End Of switch() */
+			}	/* End Of while() */
+		}	/* End of main() */
 		
-		public static void listInstances() {
+		public static void ListInstances() {
 		
-			System.out.println("Listing instances....");
-		
-			boolean done = false;
+			System.out.println("\n 인스턴스를 불러오는 중입니다 .... \n");
 		
 			DescribeInstancesRequest request = new DescribeInstancesRequest();
-		
 			
-			while(!done)
+			boolean loop_sign = true;
+			
+			while(loop_sign)
 			{	
 				DescribeInstancesResult response = ec2.describeInstances(request);
 				
 				for(Reservation reservation : response.getReservations())
 				{
 					for(Instance instance : reservation.getInstances()) {
+						
 						System.out.printf(
-								"[id] %s, " + "[AMI] %s, " + "[type] %s, " + "[state] %10s, " + "[monitoring state] %s", 
+								"[ID] %s \t | " + "[AMI] %s \t | " + "[TYPE] %s \t | " + "[STATE] %s \t | " + "[MONITORING STATE] %s \t | \n", 
 								instance.getInstanceId(), 
 								instance.getImageId(), 
 								instance.getInstanceType(), 
 								instance.getState().getName(), 
 								instance.getMonitoring().getState());
 						}
-					System.out.println();
 				}
+				
 				request.setNextToken(response.getNextToken());
+				
 				if(response.getNextToken() == null)
 				{
-					done = true;
+					loop_sign = false;
 				}
 			}
 		}
 		
 		public static void AvailableZones() {
 			
-			System.out.println("Available zones....");
+			System.out.println("\n 가용영역을 불러오는 중입니다 .... \n");
 	        
 	        DescribeAvailabilityZonesResult zones_response = ec2.describeAvailabilityZones();
 	        
 	        for(AvailabilityZone zone : zones_response.getAvailabilityZones()) {
-	        	System.out.printf( "[id] %s, " + "[region] %10s " + "[zone] %10s", zone.getZoneId(), zone.getRegionName(), zone.getZoneName());
-	        	System.out.println();
+	        	System.out.printf("[ID] %s \t | " + "[REGION] %s \t | " + "[ZONE] %s \t | \n", 
+	        			zone.getZoneId(), 
+	        			zone.getRegionName(), 
+	        			zone.getZoneName());
 	        }
 	        
-	        System.out.printf("\nYou have access to %d Availbility Zones.\n", zones_response.getAvailabilityZones().size());
+	        System.out.printf("\n 당신은 %d개의  가용영역에 접근할 수 있습니다.\n", zones_response.getAvailabilityZones().size());
 		}
 		
 		public static void StartInstance() {
 			
-			System.out.println("Starting instance....");
+			System.out.println("\n 인스턴트를 실행하는 중입니다 .... \n");
 			
 			System.out.print("Enter an instance ID: ");
-			
-			Scanner input = new Scanner(System.in);
 			
 			String instance_id = input.next();
 			
@@ -179,38 +189,40 @@ public class CC {
 		
 		public static void AvailableRegions() {
 			
-			System.out.println("Available Regions....");
-	        // 계정에 사용할 수 있는 리전을 나열하려면 AmazonEC2Client의 describeRegions 메서드를 호출
+			System.out.println("가용리전을 불러오는 중입니다 ....");
+			
 	        DescribeRegionsResult regions_response = ec2.describeRegions();
 	        
-	        for(Region region : regions_response.getRegions()) {
-	        	System.out.printf( "[region] %20s " + ", [endpoint] %s", region.getRegionName(), region.getEndpoint());
-	        	System.out.println();
+	        for(Region region : regions_response.getRegions())
+	        {
+	        	System.out.printf( "[REGION] %s \t | " + ", [ENDPOINT] %s \t | \n", region.getRegionName(), region.getEndpoint());
 	        }
 		}
 		
 		public static void StopInstance() {
 			
-			System.out.println("Stopping instance....");
+			System.out.println(" 인스턴트를 종료하는 중입니다 ....");
 			
-			System.out.print("Enter an instance ID: ");
-			
-			Scanner input = new Scanner(System.in);
+			System.out.print("종료할 인스턴스의 ID를 입력해주세요 >> ");
 			
 			String instance_id = input.next();
 			
-			StopInstancesRequest stopInstancesRequest = new StopInstancesRequest().withInstanceIds(instance_id);
+			StopInstancesRequest stop_Instances_Request = new StopInstancesRequest().withInstanceIds(instance_id);
 
-	        ec2.stopInstances(stopInstancesRequest).getStoppingInstances().get(0).getPreviousState().getName();
+	        ec2.stopInstances(stop_Instances_Request).getStoppingInstances().get(0).getPreviousState().getName();
 		}
 		
 		public static void CreateInstance() {
 			
-			System.out.println("Create instance....");
+			System.out.println(" 인스턴스를 생성하는 중입니다 ....");
+			
+			System.out.print("AMI ID를 입력해주세요 >> ");
+			
+			String ami_id = input.next();
 			
 			RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 			
-			runInstancesRequest.withImageId("ami-0b7554904b554fb53")
+			runInstancesRequest.withImageId(ami_id)
 							   .withInstanceType("t2.micro")
 			                   .withMinCount(1)
 			                   .withMaxCount(1)
@@ -220,18 +232,17 @@ public class CC {
 			RunInstancesResult result = ec2.runInstances(runInstancesRequest);
 			
 			Instance instance = result.getReservation().getInstances().get(0);
+			
 			String instance_id = instance.getInstanceId();
 			
-			System.out.printf("Create instance : %s \n", instance_id);
+			System.out.printf(" \" %s \" 인스턴스를 생성했습니다. \n", instance_id);
 		}
 		
 		public static void RebootInstance() {
 			
-			System.out.println("Stopping instance....");
+			System.out.println(" 인스턴스를 재부팅하는 중입니다 ....");
 			
 			System.out.print("Enter an instance ID: ");
-			
-			Scanner input = new Scanner(System.in);
 			
 			String instance_id = input.next();
 			
@@ -241,7 +252,7 @@ public class CC {
 		
 		public static void listImages() {
 			
-			System.out.println("Listing images....");
+			System.out.println("\n 이미지를 불러오는 중입니다 .... \n");
 			
 			DescribeImagesRequest img_req = new DescribeImagesRequest();
 			
@@ -251,8 +262,9 @@ public class CC {
 			
 			List<Image> images = img_result.getImages();
 			
-			for (Image image : images) {
-				System.out.printf("[id]%s [name]%s \n",image.getImageId(), image.getName());
+			for (Image image : images)
+			{
+				System.out.printf("[ID] %s \t | [NAME] %s \t | [OWNER] %s \t | \n",image.getImageId(), image.getName(), image.getOwnerId());
 			}
 		}
 }
